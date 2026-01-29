@@ -34,13 +34,13 @@ runs:
         let body = {
           owner: process.env.GITHUB_REPOSITORY.split('/')[0],
           repo: process.env.GITHUB_REPOSITORY.split('/')[1],
-          name: ${{ inputs.name || github.event.repository.name }},
+          name: ${{ toJSON(inputs.name || github.event.repository.name) }},
           head_sha: process.env.GITHUB_SHA,
-          status: ${{ inputs.status }},
+          status: ${{ toJSON(inputs.status) }},
           output: {
-            title: ${{ inputs.title }},
-            summary: ${{ inputs.summary }},
-            text: ${{ inputs.details }}
+            title: ${{ toJSON(inputs.title) }},
+            summary: ${{ toJSON(inputs.summary) }},
+            text: ${{ toJSON(inputs.details) }}
           }
         };
 

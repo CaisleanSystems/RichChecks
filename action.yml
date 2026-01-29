@@ -103,7 +103,7 @@ runs:
         const commitSha = "${{ github.event.pull_request.head.sha || github.sha }}";
         const owner = process.env.GITHUB_REPOSITORY.split('/')[0];
         const repo = process.env.GITHUB_REPOSITORY.split('/')[1];
-        const name = "${{ toJSON((inputs.name || github.event.repository.name) }}";
+        const name = "${{ toJSON(inputs.name || github.event.repository.name) }}";
         const conclusion = "${{ inputs.conclusion }}".trim();
         const shouldFailForNeutral = ("${{ inputs.fail-on-neutral }}" === "true");
         const shouldFailForNonSuccess = ("${{ inputs.fail-on-error }}" === "true");

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "rick checks within actions",
   "main": "index.js",
+  "type": "module",
   "dependencies": {
     "@actions/core": "^3.0.0",
     "@actions/github": "^9.0.0",

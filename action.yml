@@ -42,5 +42,5 @@ outputs:
     description: 'contains the check run id of the check created or updated'
 
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'

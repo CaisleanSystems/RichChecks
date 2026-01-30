@@ -1,6 +1,5 @@
 const core = require("@actions/core");
-const { context } = require("@actions/github");
-const { GitHub } = require("@actions/github/lib/utils");
+const { context, GitHub } = require("@actions/github");
 const { retry } = require("@octokit/plugin-retry");
 const { throttling } = require("@octokit/plugin-throttling");
 const { validateAnnotationsArray } = require("./validateAnnotationsArray");

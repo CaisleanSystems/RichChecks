@@ -1,0 +1,33 @@
+{
+  "name": "richchecks",
+  "version": "1.0.0",
+  "description": "rick checks within actions",
+  "main": "index.js",
+  "dependencies": {
+    "@actions/core": "^3.0.0",
+    "@actions/github": "^9.0.0",
+    "@octokit/plugin-retry": "^8.0.3",
+    "@octokit/plugin-throttling": "^11.0.3"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^13.0.1",
+    "eslint": "^9.39.2",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CaisleanSystems/RichChecks.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/CaisleanSystems/RichChecks/issues"
+  },
+  "homepage": "https://github.com/CaisleanSystems/RichChecks#readme"
+}

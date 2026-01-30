@@ -1,6 +1,6 @@
 # Update/Create a Rich Check
 
-![License](https://img.shields.io/github/license/JediSchools/RichChecks)
+![License](https://img.shields.io/github/license/CaisleanSystems/RichChecks)
 
 A GitHub Action that enables you to update or create rich checks. Part of the teachings from the *GitHub Mastery Book*.
 
@@ -20,7 +20,7 @@ Ensure you have a workflow set up on your repository. For more details, refer to
 ```yaml
 steps:
   - name: Update/Create a Rich Check
-    uses: JediSchools/RichChecks@1.0
+    uses: CaisleanSystems/RichChecks@1.0
     with:
       name: 'Name of the check'
       status: 'queued'
@@ -60,5 +60,5 @@ This project is licensed under the MIT License. See [LICENSE](./LICENSE.txt) for
 
 ### Contact
 
-- Author: JediSchools
-- GitHub: [@JediSchools](https://github.com/JediSchools)
+- Author: Caislean Systems
+- GitHub: [@CaisleanSystems](https://github.com/CaisleanSystems)

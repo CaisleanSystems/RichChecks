@@ -4,8 +4,8 @@ import * as GitHub from "@actions/github/lib/utils";
 
 import * as retry from "@octokit/plugin-retry";
 import * as throttling from "@octokit/plugin-throttling";
-const { validateAnnotationsArray } = require("./validateAnnotationsArray");
-const { validateImagesArray } = require("./validateImagesArray");
+import * as validateAnnotationsArray from "./validateAnnotationsArray";
+import * as validateImagesArray from "./validateImagesArray";
 
 // Pro-Tip: create a grouping so its easily to manage the output
 core.startGroup("setup variables and client");

@@ -1,7 +1,5 @@
 import * as core from "@actions/core";
 import * as context from "@actions/github";
-import { Octokit } from "@octokit/core";
-
 import * as retry from "@octokit/plugin-retry";
 import * as throttling from "@octokit/plugin-throttling";
 import * as validateAnnotationsArray from "./validateAnnotationsArray";
@@ -25,50 +23,52 @@ const images = core.getInput("images");
 const annotations = core.getInput("annotations");
 const token = core.getInput("github-token");
 
+const octokit = context.getOctokit(token);
+
 // Create a custom Octokit constructor with the retry and throttling plugins installed
-const OctokitWithPlugins = Octokit.plugin(retry, throttling);
+//const OctokitWithPlugins = context.getOctokit(token)
 
 console.log("created kit");
 
 // initiate the client with the token and plugins
-const octokit = new OctokitWithPlugins({
-    auth: token,
-    // Enable retries and customize strategy
-    retry: {
-        do: true, // enable retries
-        retryAfter: 30, // time to wait between retries in seconds
-        maxRetries: 5, // max number of retries
-    },
-    // Enable throttling/rate-limiting
-    throttle: {
-        onRateLimit: (retryAfter, options) => {
-            octokit.log.warn(
-                `Request quota exhausted for your request ${options.method} ${options.url}`
-            );
-            if (options.request.retryCount === 0) {
-                // only retries once
-                console.log(`Retrying after ${retryAfter} seconds!`);
-                return true;
-            }
-        },
-        onSecondaryRateLimit: (retryAfter, options) => {
-            octokit.log.warn(
-                `Request quota exhausted for your secondary request ${options.method} ${options.url}`
-            );
-            if (options.request.retryCount === 0) {
-                // only retries once
-                console.log(`Secondary retrying after ${retryAfter} seconds!`);
-                return true;
-            }
-        },
-        onAbuseLimit: (retryAfter, options) => {
-            // does not retry, only logs a warning
-            octokit.log.warn(
-                `Abuse detected for your request ${options.method} ${options.url}`
-            );
-        },
-    },
-});
+//const octokit = new OctokitWithPlugins({
+//    auth: token,
+//    // Enable retries and customize strategy
+//    retry: {
+//        do: true, // enable retries
+//        retryAfter: 30, // time to wait between retries in seconds
+//        maxRetries: 5, // max number of retries
+//    },
+//    // Enable throttling/rate-limiting
+//    throttle: {
+//        onRateLimit: (retryAfter, options) => {
+//            octokit.log.warn(
+//                `Request quota exhausted for your request ${options.method} ${options.url}`
+//            );
+//            if (options.request.retryCount === 0) {
+//                // only retries once
+//                console.log(`Retrying after ${retryAfter} seconds!`);
+//                return true;
+//            }
+//        },
+//        onSecondaryRateLimit: (retryAfter, options) => {
+//            octokit.log.warn(
+//                `Request quota exhausted for your secondary request ${options.method} ${options.url}`
+//            );
+//            if (options.request.retryCount === 0) {
+//                // only retries once
+//                console.log(`Secondary retrying after ${retryAfter} seconds!`);
+//                return true;
+//            }
+//        },
+//        onAbuseLimit: (retryAfter, options) => {
+//            // does not retry, only logs a warning
+//            octokit.log.warn(
+//                `Abuse detected for your request ${options.method} ${options.url}`
+//            );
+//        },
+//    },
+//});
 
 // Test inputs and if they fall back to defaults, inform the user that we've made an assumption here
 let name = core.getInput("name");

@@ -3,10 +3,10 @@ import commonjs from "@rollup/plugin-commonjs";
 
 export default {
     input: "index.js",
-    external: () => false, 
     output: {
-        file: "dist/index.cjs",
-        format: "cjs",
+        esModule: true,
+        file: "dist/index.js",
+        format: "es",
         sourcemap: true
     },
     plugins: [

@@ -1,8 +1,9 @@
-const core = require("@actions/core");
-const { context } = require("@actions/github");
-const { GitHub } = require("@actions/github/lib/utils");
-const { retry } = require("@octokit/plugin-retry");
-const { throttling } = require("@octokit/plugin-throttling");
+import * as core from "@actions/core";
+import * as context from "@actions/github";
+import * as GitHub from "@actions/github/lib/utils";
+
+import * as retry from "@octokit/plugin-retry";
+import * as throttling from "@octokit/plugin-throttling";
 const { validateAnnotationsArray } = require("./validateAnnotationsArray");
 const { validateImagesArray } = require("./validateImagesArray");
 

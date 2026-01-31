@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 import * as context from "@actions/github";
-import * as GitHub from "@actions/github/lib/utils";
+import { Octokit } from "@octokit/rest";
 
 import * as retry from "@octokit/plugin-retry";
 import * as throttling from "@octokit/plugin-throttling";
@@ -26,7 +26,7 @@ const annotations = core.getInput("annotations");
 const token = core.getInput("github-token");
 
 // Create a custom Octokit constructor with the retry and throttling plugins installed
-const OctokitWithPlugins = GitHub.plugin(retry, throttling);
+const OctokitWithPlugins = Octokit.plugin(retry, throttling);
 
 console.log("created kit");
 

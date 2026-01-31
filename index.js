@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 import * as context from "@actions/github";
-import { Octokit } from "@octokit/rest";
+import { Octokit } from "@octokit/core";
 
 import * as retry from "@octokit/plugin-retry";
 import * as throttling from "@octokit/plugin-throttling";

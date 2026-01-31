@@ -29128,10 +29128,10 @@ var Hook = { Collection };
 // pkg/dist-src/defaults.js
 
 // pkg/dist-src/version.js
-var VERSION$9 = "0.0.0-development";
+var VERSION$7 = "0.0.0-development";
 
 // pkg/dist-src/defaults.js
-var userAgent = `octokit-endpoint.js/${VERSION$9} ${getUserAgent()}`;
+var userAgent = `octokit-endpoint.js/${VERSION$7} ${getUserAgent()}`;
 var DEFAULTS = {
   method: "GET",
   baseUrl: "https://api.github.com",
@@ -29690,12 +29690,12 @@ class RequestError extends Error {
 // pkg/dist-src/index.js
 
 // pkg/dist-src/version.js
-var VERSION$8 = "10.0.7";
+var VERSION$6 = "10.0.7";
 
 // pkg/dist-src/defaults.js
 var defaults_default = {
   headers: {
-    "user-agent": `octokit-request.js/${VERSION$8} ${getUserAgent()}`
+    "user-agent": `octokit-request.js/${VERSION$6} ${getUserAgent()}`
   }
 };
 
@@ -29880,7 +29880,7 @@ var request = withDefaults$1(endpoint, defaults_default);
 // pkg/dist-src/index.js
 
 // pkg/dist-src/version.js
-var VERSION$7 = "0.0.0-development";
+var VERSION$5 = "0.0.0-development";
 
 // pkg/dist-src/error.js
 function _buildMessageForResponseErrors(data) {
@@ -29982,7 +29982,7 @@ function withDefaults(request2, newDefaults) {
 // pkg/dist-src/index.js
 withDefaults(request, {
   headers: {
-    "user-agent": `octokit-graphql.js/${VERSION$7} ${getUserAgent()}`
+    "user-agent": `octokit-graphql.js/${VERSION$5} ${getUserAgent()}`
   },
   method: "POST",
   url: "/graphql"
@@ -30047,7 +30047,7 @@ var createTokenAuth = function createTokenAuth2(token) {
   });
 };
 
-const VERSION$6 = "7.0.6";
+const VERSION$4 = "7.0.6";
 
 const noop$1 = () => {
 };
@@ -30068,9 +30068,9 @@ function createLogger(logger = {}) {
   }
   return logger;
 }
-const userAgentTrail = `octokit-core.js/${VERSION$6} ${getUserAgent()}`;
-let Octokit$1 = class Octokit {
-  static VERSION = VERSION$6;
+const userAgentTrail = `octokit-core.js/${VERSION$4} ${getUserAgent()}`;
+class Octokit {
+  static VERSION = VERSION$4;
   static defaults(defaults) {
     const OctokitWithDefaults = class extends this {
       constructor(...args) {
@@ -30180,9 +30180,9 @@ let Octokit$1 = class Octokit {
   hook;
   // TODO: type `octokit.auth` based on passed options.authStrategy
   auth;
-};
+}
 
-const VERSION$5 = "17.0.0";
+const VERSION$3 = "17.0.0";
 
 const Endpoints = {
   actions: {
@@ -32603,18 +32603,10 @@ function restEndpointMethods(octokit) {
     rest: api
   };
 }
-restEndpointMethods.VERSION = VERSION$5;
-function legacyRestEndpointMethods(octokit) {
-  const api = endpointsToMethods(octokit);
-  return {
-    ...api,
-    rest: api
-  };
-}
-legacyRestEndpointMethods.VERSION = VERSION$5;
+restEndpointMethods.VERSION = VERSION$3;
 
 // pkg/dist-src/version.js
-var VERSION$4 = "0.0.0-development";
+var VERSION$2 = "0.0.0-development";
 
 // pkg/dist-src/normalize-paginated-list-response.js
 function normalizePaginatedListResponse(response) {
@@ -32737,7 +32729,7 @@ function paginateRest(octokit) {
     })
   };
 }
-paginateRest.VERSION = VERSION$4;
+paginateRest.VERSION = VERSION$2;
 
 new Context();
 const baseUrl = getApiBaseUrl();
@@ -32748,42 +32740,9 @@ const defaults = {
         fetch: getProxyFetch(baseUrl)
     }
 };
-Octokit$1.plugin(restEndpointMethods, paginateRest).defaults(defaults);
+Octokit.plugin(restEndpointMethods, paginateRest).defaults(defaults);
 
 new Context();
-
-const VERSION$3 = "6.0.0";
-
-function requestLog(octokit) {
-  octokit.hook.wrap("request", (request, options) => {
-    octokit.log.debug("request", options);
-    const start = Date.now();
-    const requestOptions = octokit.request.endpoint.parse(options);
-    const path = requestOptions.url.replace(options.baseUrl, "");
-    return request(options).then((response) => {
-      const requestId = response.headers["x-github-request-id"];
-      octokit.log.info(
-        `${requestOptions.method} ${path} - ${response.status} with id ${requestId} in ${Date.now() - start}ms`
-      );
-      return response;
-    }).catch((error) => {
-      const requestId = error.response?.headers["x-github-request-id"] || "UNKNOWN";
-      octokit.log.error(
-        `${requestOptions.method} ${path} - ${error.status} with id ${requestId} in ${Date.now() - start}ms`
-      );
-      throw error;
-    });
-  });
-}
-requestLog.VERSION = VERSION$3;
-
-const VERSION$2 = "22.0.1";
-
-const Octokit = Octokit$1.plugin(requestLog, legacyRestEndpointMethods, paginateRest).defaults(
-  {
-    userAgent: `octokit-rest.js/${VERSION$2}`
-  }
-);
 
 var light$1 = {exports: {}};
 

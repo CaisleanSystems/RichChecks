@@ -8,14 +8,15 @@
     "@actions/core": "^3.0.0",
     "@actions/github": "^9.0.0",
     "@octokit/plugin-retry": "^8.0.3",
-    "@octokit/plugin-throttling": "^11.0.3"
+    "@octokit/plugin-throttling": "^11.0.3",
+    "@octokit/core": "^7.0.6",
+    "@octokit/rest": "^22.0.1",
+    "octokit": "^5.0.5"
   },
   "devDependencies": {
-    "@octokit/rest": "^22.0.1",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "eslint": "^9.39.2",
-    "octokit": "^5.0.5",
     "rollup": "^4.57.1"
   },
   "scripts": {

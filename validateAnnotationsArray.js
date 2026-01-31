@@ -1,4 +1,4 @@
-function validateAnnotationsArray(payload) {
+export function validateAnnotationsArray(payload) {
   const errors = [];
   if (!Array.isArray(payload)) {
     errors.push("Payload is not an array");
@@ -55,4 +55,3 @@ function validateAnnotationsArray(payload) {
   });
   return errors;
 }
-exports.validateAnnotationsArray = validateAnnotationsArray;

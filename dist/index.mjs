@@ -34647,10 +34647,10 @@ function validateAnnotationsArray(payload) {
   });
   return errors;
 }
-exports.validateAnnotationsArray = validateAnnotationsArray;
 
 var validateAnnotationsArray$1 = /*#__PURE__*/Object.freeze({
-    __proto__: null
+    __proto__: null,
+    validateAnnotationsArray: validateAnnotationsArray
 });
 
 function validateImagesArray(payload) {
@@ -34695,10 +34695,10 @@ function validateImagesArray(payload) {
 
   return errors;
 }
-exports.validateImagesArray = validateImagesArray;
 
 var validateImagesArray$1 = /*#__PURE__*/Object.freeze({
-    __proto__: null
+    __proto__: null,
+    validateImagesArray: validateImagesArray
 });
 
 // Pro-Tip: create a grouping so its easily to manage the output

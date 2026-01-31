@@ -1,4 +1,4 @@
-function validateImagesArray(payload) {
+export function validateImagesArray(payload) {
   const errors = [];
 
   if (!Array.isArray(payload)) {
@@ -40,4 +40,3 @@ function validateImagesArray(payload) {
 
   return errors;
 }
-exports.validateImagesArray = validateImagesArray;

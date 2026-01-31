@@ -34931,4 +34931,4 @@ async function run() {
 }
 
 run();
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=index.cjs.map

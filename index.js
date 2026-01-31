@@ -1,7 +1,6 @@
-import * as core from "@actions/core";
-import * as github from "@actions/github";
-
-const { context, GitHub } = github;
+const core = require("@actions/core");
+const { context } = require("@actions/github");
+const { GitHub } = require("@actions/github/lib/utils");
 const { retry } = require("@octokit/plugin-retry");
 const { throttling } = require("@octokit/plugin-throttling");
 const { validateAnnotationsArray } = require("./validateAnnotationsArray");

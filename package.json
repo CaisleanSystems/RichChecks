@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "rick checks within actions",
   "main": "index.js",
+  "type": "module",
   "dependencies": {
     "@actions/core": "^3.0.0",
     "@actions/github": "^9.0.0",
@@ -10,15 +11,14 @@
     "@octokit/plugin-throttling": "^11.0.3"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.38.4",
-    "copy-webpack-plugin": "^13.0.1",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "eslint": "^9.39.2",
-    "webpack": "^5.104.1",
-    "webpack-cli": "^6.0.1"
+    "rollup": "^4.57.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "ncc build index.js -o dist"
+    "build": "rollup --config rollup.config.js"
   },
   "repository": {
     "type": "git",

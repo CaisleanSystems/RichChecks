@@ -32,6 +32,9 @@ inputs:
   fail-on-neutral:
     description: 'step will fail if specified `conclusion` is `neutral`'
     required: false
+  annotations:
+    description: 'the annotations of your check(JSON Object)'
+    required: false
 
 branding:
   icon: 'check-circle'

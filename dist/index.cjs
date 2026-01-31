@@ -1,3 +1,5 @@
+'use strict';
+
 const core = require("@actions/core");
 const { context } = require("@actions/github");
 const { GitHub } = require("@actions/github/lib/utils");
@@ -239,4 +241,4 @@ async function run() {
 }
 
 run();
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=index.cjs.map

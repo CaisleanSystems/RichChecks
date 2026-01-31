@@ -5,8 +5,8 @@ export default {
     input: "index.js",
     external: () => false, 
     output: {
-        file: "dist/index.js",
-        format: "esm",
+        file: "dist/index.cjs",
+        format: "cjs",
         sourcemap: true
     },
     plugins: [

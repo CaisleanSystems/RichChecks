@@ -5,7 +5,7 @@ export default {
     input: "index.js",
     output: {
         esModule: true,
-        file: "dist/index.cjs",
+        file: "dist/index.js",
         format: "es",
         sourcemap: true
     },

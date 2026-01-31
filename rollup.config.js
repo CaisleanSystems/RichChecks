@@ -1,15 +1,20 @@
-import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
 
-const config = {
+export default {
     input: "index.js",
+    external: () => false, 
     output: {
-        esModule: true,
         file: "dist/index.js",
-        format: "es",
-        sourcemap: true,
+        format: "esm",
+        sourcemap: true
     },
-    plugins: [commonjs(), nodeResolve({ preferBuiltins: true })],
+    plugins: [
+        nodeResolve({
+            preferBuiltins: true
+        }),
+        commonjs({
+            include: /node_modules/
+        })
+    ]
 };
-
-export default config;

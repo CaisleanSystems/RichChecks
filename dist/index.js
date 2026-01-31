@@ -34590,8 +34590,116 @@ var throttling$1 = /*#__PURE__*/Object.freeze({
     throttling: throttling
 });
 
-const { validateAnnotationsArray } = require("./validateAnnotationsArray");
-const { validateImagesArray } = require("./validateImagesArray");
+function validateAnnotationsArray(payload) {
+  const errors = [];
+  if (!Array.isArray(payload)) {
+    errors.push("Payload is not an array");
+    return errors;
+  }
+  payload.forEach((item, index) => {
+    // Check path
+    if (typeof item.path !== "string") {
+      errors.push(`Item at index ${index} has an invalid 'path'`);
+    }
+    // Check start_line
+    if (typeof item.start_line !== "number" || item.start_line < 1) {
+      errors.push(`Item at index ${index} has an invalid 'start_line'`);
+    }
+    // Check end_line
+    if (typeof item.end_line !== "number" || item.end_line < item.start_line) {
+      errors.push(`Item at index ${index} has an invalid 'end_line'`);
+    }
+    // Check start_column
+    if (
+      item.start_column !== undefined &&
+      (typeof item.start_column !== "number" || item.start_column < 1)
+    ) {
+      errors.push(`Item at index ${index} has an invalid 'start_column'`);
+    }
+    // Check end_column
+    if (
+      item.end_column !== undefined &&
+      (typeof item.end_column !== "number" || item.end_column < 1)
+    ) {
+      errors.push(`Item at index ${index} has an invalid 'end_column'`);
+    }
+    // Check annotation_level
+    if (
+      ["notice", "warning", "failure"].indexOf(item.annotation_level) === -1
+    ) {
+      errors.push(`Item at index ${index} has an invalid 'annotation_level'`);
+    }
+    // Check message
+    if (typeof item.message !== "string") {
+      errors.push(`Item at index ${index} has an invalid 'message'`);
+    }
+    // Check title
+    if (item.title !== undefined && typeof item.title !== "string") {
+      errors.push(`Item at index ${index} has an invalid 'title'`);
+    }
+    // Check raw_details
+    if (
+      item.raw_details !== undefined &&
+      typeof item.raw_details !== "string"
+    ) {
+      errors.push(`Item at index ${index} has an invalid 'raw_details'`);
+    }
+  });
+  return errors;
+}
+exports.validateAnnotationsArray = validateAnnotationsArray;
+
+var validateAnnotationsArray$1 = /*#__PURE__*/Object.freeze({
+    __proto__: null
+});
+
+function validateImagesArray(payload) {
+  const errors = [];
+
+  if (!Array.isArray(payload)) {
+    errors.push("Payload is not an array");
+    return errors;
+  }
+
+  payload.forEach((item, index) => {
+    // Check if item is an object
+    if (typeof item !== "object" || item === null) {
+      errors.push(`Item at index ${index} is not an object`);
+      return; // Skip further checks for this item
+    }
+
+    // Check alt
+    if (
+      !Object.prototype.hasOwnProperty.call(item, "alt") ||
+      typeof item.alt !== "string"
+    ) {
+      errors.push(`Item at index ${index} has an invalid 'alt'`);
+    }
+
+    // Check image_url
+    if (
+      !Object.prototype.hasOwnProperty.call(item, "image_url") ||
+      typeof item.image_url !== "string"
+    ) {
+      errors.push(`Item at index ${index} has an invalid 'image_url'`);
+    }
+
+    // Check caption (optional)
+    if (
+      Object.prototype.hasOwnProperty.call(item, "caption") &&
+      typeof item.caption !== "string"
+    ) {
+      errors.push(`Item at index ${index} has an invalid 'caption'`);
+    }
+  });
+
+  return errors;
+}
+exports.validateImagesArray = validateImagesArray;
+
+var validateImagesArray$1 = /*#__PURE__*/Object.freeze({
+    __proto__: null
+});
 
 // Pro-Tip: create a grouping so its easily to manage the output
 startGroup("setup variables and client");
@@ -34763,7 +34871,7 @@ async function run() {
             // Parse to JSON to handle safely
             const annotationsAsJson = JSON.parse(annotations);
             const annotationValidationErrors =
-                validateAnnotationsArray(annotationsAsJson);
+                validateAnnotationsArray$1(annotationsAsJson);
 
             if (annotationValidationErrors.length <= 0) {
                 info("successfully validated annotations");
@@ -34782,7 +34890,7 @@ async function run() {
         if (images) {
             // Parse to JSON to handle safely
             const imageAsJson = JSON.parse(images);
-            const imageValidationErrors = validateImagesArray(imageAsJson);
+            const imageValidationErrors = validateImagesArray$1(imageAsJson);
 
             if (imageValidationErrors.length <= 0) {
                 info("successfully validated images");

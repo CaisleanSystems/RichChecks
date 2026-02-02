@@ -3,8 +3,8 @@ import * as github from "@actions/github";
 import { Octokit } from "@octokit/rest";
 import { retry } from "@octokit/plugin-retry";
 import { throttling } from "@octokit/plugin-throttling";
-import * as validateAnnotationsArray from "./validateAnnotationsArray";
-import * as validateImagesArray from "./validateImagesArray";
+import { validateAnnotationsArray } from "./validateAnnotationsArray";
+import { validateImagesArray }  from "./validateImagesArray";
 
 // Pro-Tip: create a grouping so its easily to manage the output
 core.startGroup("setup variables and client");

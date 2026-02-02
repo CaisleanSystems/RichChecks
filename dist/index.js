@@ -34678,11 +34678,6 @@ function validateAnnotationsArray(payload) {
   return errors;
 }
 
-var validateAnnotationsArray$1 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    validateAnnotationsArray: validateAnnotationsArray
-});
-
 function validateImagesArray(payload) {
   const errors = [];
 
@@ -34725,11 +34720,6 @@ function validateImagesArray(payload) {
 
   return errors;
 }
-
-var validateImagesArray$1 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    validateImagesArray: validateImagesArray
-});
 
 // Pro-Tip: create a grouping so its easily to manage the output
 startGroup("setup variables and client");
@@ -34905,7 +34895,7 @@ async function run() {
             // Parse to JSON to handle safely
             const annotationsAsJson = JSON.parse(annotations);
             const annotationValidationErrors =
-                validateAnnotationsArray$1(annotationsAsJson);
+                validateAnnotationsArray(annotationsAsJson);
 
             if (annotationValidationErrors.length <= 0) {
                 info("successfully validated annotations");
@@ -34924,7 +34914,7 @@ async function run() {
         if (images) {
             // Parse to JSON to handle safely
             const imageAsJson = JSON.parse(images);
-            const imageValidationErrors = validateImagesArray$1(imageAsJson);
+            const imageValidationErrors = validateImagesArray(imageAsJson);
 
             if (imageValidationErrors.length <= 0) {
                 info("successfully validated images");

@@ -35,6 +35,9 @@ inputs:
   annotations:
     description: 'the annotations of your check(JSON Object)'
     required: false
+  images:
+    description: 'add images to your check(JSON Object)'
+    required: false
 
 branding:
   icon: 'check-circle'

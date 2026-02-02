@@ -105,9 +105,6 @@ function issueCommand(command, properties, message) {
     const cmd = new Command(command, properties, message);
     process.stdout.write(cmd.toString() + os.EOL);
 }
-function issue(name, message = '') {
-    issueCommand(name, {}, message);
-}
 const CMD_STRING = '::';
 class Command {
     constructor(command, properties, message) {
@@ -27994,22 +27991,6 @@ function setFailed(message) {
     process.exitCode = ExitCode.Failure;
     error(message);
 }
-//-----------------------------------------------------------------------
-// Logging Commands
-//-----------------------------------------------------------------------
-/**
- * Gets whether Actions Step Debug is on or not
- */
-function isDebug() {
-    return process.env['RUNNER_DEBUG'] === '1';
-}
-/**
- * Writes debug message to user log
- * @param message debug message
- */
-function debug(message) {
-    issueCommand('debug', {}, message);
-}
 /**
  * Adds an error issue
  * @param message error issue message. Errors will be converted to string via toString()
@@ -28019,35 +28000,11 @@ function error(message, properties = {}) {
     issueCommand('error', toCommandProperties(properties), message instanceof Error ? message.toString() : message);
 }
 /**
- * Adds a warning issue
- * @param message warning issue message. Errors will be converted to string via toString()
- * @param properties optional properties to add to the annotation.
- */
-function warning(message, properties = {}) {
-    issueCommand('warning', toCommandProperties(properties), message instanceof Error ? message.toString() : message);
-}
-/**
  * Writes info to log with console.log.
  * @param message info message
  */
 function info(message) {
     process.stdout.write(message + os.EOL);
-}
-/**
- * Begin an output group.
- *
- * Output until the next `groupEnd` will be foldable in this group
- *
- * @param name The name of the output group
- */
-function startGroup(name) {
-    issue('group', name);
-}
-/**
- * End an output group.
- */
-function endGroup() {
-    issue('endgroup');
 }
 
 class Context {
@@ -28960,15 +28917,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-function getAuthString(token, options) {
-    if (!token && !options.auth) {
-        throw new Error('Parameter token or opts.auth is required');
-    }
-    else if (token && options.auth) {
-        throw new Error('Parameters token and opts.auth may not both be specified');
-    }
-    return typeof options.auth === 'string' ? options.auth : `token ${token}`;
-}
 function getProxyAgent(destinationUrl) {
     const hc = new libExports.HttpClient();
     return hc.getAgent(destinationUrl);
@@ -32745,376 +32693,267 @@ const defaults = {
         fetch: getProxyFetch(baseUrl)
     }
 };
-const GitHub = Octokit.plugin(restEndpointMethods, paginateRest).defaults(defaults);
-/**
- * Convience function to correctly format Octokit Options to pass into the constructor.
- *
- * @param     token    the repo PAT or GITHUB_TOKEN
- * @param     options  other options to set
- */
-function getOctokitOptions(token, options) {
-    const opts = Object.assign({}, {}); // Shallow clone - don't mutate the object provided by the caller
-    // Auth
-    const auth = getAuthString(token, opts);
-    if (auth) {
-        opts.auth = auth;
-    }
-    return opts;
+Octokit.plugin(restEndpointMethods, paginateRest).defaults(defaults);
+
+const context = new Context();
+
+try {
+    // `who-to-greet` input defined in action metadata file
+    const nameToGreet = getInput("who-to-greet");
+    info(`Hello ${nameToGreet}!`);
+
+    // Get the current time and set it as an output variable
+    const time = new Date().toTimeString();
+    setOutput("time", time);
+
+    // Get the JSON webhook payload for the event that triggered the workflow
+    const payload = JSON.stringify(context.payload, undefined, 2);
+    info(`The event payload: ${payload}`);
+} catch (error) {
+    setFailed(error.message);
 }
 
-new Context();
-/**
- * Returns a hydrated octokit ready to use for GitHub Actions
- *
- * @param     token    the repo PAT or GITHUB_TOKEN
- * @param     options  other options to set
- */
-function getOctokit(token, options, ...additionalPlugins) {
-    const GitHubWithPlugins = GitHub.plugin(...additionalPlugins);
-    return new GitHubWithPlugins(getOctokitOptions(token));
-}
 
-function validateAnnotationsArray(payload) {
-  const errors = [];
-  if (!Array.isArray(payload)) {
-    errors.push("Payload is not an array");
-    return errors;
-  }
-  payload.forEach((item, index) => {
-    // Check path
-    if (typeof item.path !== "string") {
-      errors.push(`Item at index ${index} has an invalid 'path'`);
-    }
-    // Check start_line
-    if (typeof item.start_line !== "number" || item.start_line < 1) {
-      errors.push(`Item at index ${index} has an invalid 'start_line'`);
-    }
-    // Check end_line
-    if (typeof item.end_line !== "number" || item.end_line < item.start_line) {
-      errors.push(`Item at index ${index} has an invalid 'end_line'`);
-    }
-    // Check start_column
-    if (
-      item.start_column !== undefined &&
-      (typeof item.start_column !== "number" || item.start_column < 1)
-    ) {
-      errors.push(`Item at index ${index} has an invalid 'start_column'`);
-    }
-    // Check end_column
-    if (
-      item.end_column !== undefined &&
-      (typeof item.end_column !== "number" || item.end_column < 1)
-    ) {
-      errors.push(`Item at index ${index} has an invalid 'end_column'`);
-    }
-    // Check annotation_level
-    if (
-      ["notice", "warning", "failure"].indexOf(item.annotation_level) === -1
-    ) {
-      errors.push(`Item at index ${index} has an invalid 'annotation_level'`);
-    }
-    // Check message
-    if (typeof item.message !== "string") {
-      errors.push(`Item at index ${index} has an invalid 'message'`);
-    }
-    // Check title
-    if (item.title !== undefined && typeof item.title !== "string") {
-      errors.push(`Item at index ${index} has an invalid 'title'`);
-    }
-    // Check raw_details
-    if (
-      item.raw_details !== undefined &&
-      typeof item.raw_details !== "string"
-    ) {
-      errors.push(`Item at index ${index} has an invalid 'raw_details'`);
-    }
-  });
-  return errors;
-}
+//import * as core from "@actions/core";
+//import * as context from "@actions/github";
+//import * as retry from "@octokit/plugin-retry";
+//import * as throttling from "@octokit/plugin-throttling";
+//import * as validateAnnotationsArray from "./validateAnnotationsArray";
+//import * as validateImagesArray from "./validateImagesArray";
 
-var validateAnnotationsArray$1 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    validateAnnotationsArray: validateAnnotationsArray
-});
+//// Pro-Tip: create a grouping so its easily to manage the output
+//core.startGroup("setup variables and client");
+//const successStates = ["neutral", "success"];
 
-function validateImagesArray(payload) {
-  const errors = [];
+//const owner = process.env.GITHUB_REPOSITORY.split("/")[0];
+//const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
 
-  if (!Array.isArray(payload)) {
-    errors.push("Payload is not an array");
-    return errors;
-  }
+//// When we use getInput, if there is no value, it comes back as an empty string. We must assume that empty strings are null and check/test appropriately
+//const status = core.getInput("status");
+//const title = core.getInput("title");
+//const details = core.getInput("details");
+//const summary = core.getInput("summary");
+//const conclusion = core.getInput("conclusion");
+//const existingCheckRunId = core.getInput("check-run-id");
+//const images = core.getInput("images");
+//const annotations = core.getInput("annotations");
+//const token = core.getInput("github-token");
 
-  payload.forEach((item, index) => {
-    // Check if item is an object
-    if (typeof item !== "object" || item === null) {
-      errors.push(`Item at index ${index} is not an object`);
-      return; // Skip further checks for this item
-    }
+//const octokit = context.getOctokit(token);
 
-    // Check alt
-    if (
-      !Object.prototype.hasOwnProperty.call(item, "alt") ||
-      typeof item.alt !== "string"
-    ) {
-      errors.push(`Item at index ${index} has an invalid 'alt'`);
-    }
+//// Create a custom Octokit constructor with the retry and throttling plugins installed
+////const OctokitWithPlugins = context.getOctokit(token)
 
-    // Check image_url
-    if (
-      !Object.prototype.hasOwnProperty.call(item, "image_url") ||
-      typeof item.image_url !== "string"
-    ) {
-      errors.push(`Item at index ${index} has an invalid 'image_url'`);
-    }
+//console.log("created kit");
 
-    // Check caption (optional)
-    if (
-      Object.prototype.hasOwnProperty.call(item, "caption") &&
-      typeof item.caption !== "string"
-    ) {
-      errors.push(`Item at index ${index} has an invalid 'caption'`);
-    }
-  });
+//// initiate the client with the token and plugins
+////const octokit = new OctokitWithPlugins({
+////    auth: token,
+////    // Enable retries and customize strategy
+////    retry: {
+////        do: true, // enable retries
+////        retryAfter: 30, // time to wait between retries in seconds
+////        maxRetries: 5, // max number of retries
+////    },
+////    // Enable throttling/rate-limiting
+////    throttle: {
+////        onRateLimit: (retryAfter, options) => {
+////            octokit.log.warn(
+////                `Request quota exhausted for your request ${options.method} ${options.url}`
+////            );
+////            if (options.request.retryCount === 0) {
+////                // only retries once
+////                console.log(`Retrying after ${retryAfter} seconds!`);
+////                return true;
+////            }
+////        },
+////        onSecondaryRateLimit: (retryAfter, options) => {
+////            octokit.log.warn(
+////                `Request quota exhausted for your secondary request ${options.method} ${options.url}`
+////            );
+////            if (options.request.retryCount === 0) {
+////                // only retries once
+////                console.log(`Secondary retrying after ${retryAfter} seconds!`);
+////                return true;
+////            }
+////        },
+////        onAbuseLimit: (retryAfter, options) => {
+////            // does not retry, only logs a warning
+////            octokit.log.warn(
+////                `Abuse detected for your request ${options.method} ${options.url}`
+////            );
+////        },
+////    },
+////});
 
-  return errors;
-}
+//// Test inputs and if they fall back to defaults, inform the user that we've made an assumption here
+//let name = core.getInput("name");
+//if (name == "") {
+//    // we're creating a warning for the property and advising to the default
+//    core.warning("no name set, using repo name");
+//    name = context.repo.name;
+//}
 
-var validateImagesArray$1 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    validateImagesArray: validateImagesArray
-});
+//const pull_request = context.payload.pull_request;
+//let commitSha = "";
+//if (pull_request !== undefined) {
+//    commitSha = pull_request.head.sha;
+//}
 
-// Pro-Tip: create a grouping so its easily to manage the output
-startGroup("setup variables and client");
-const successStates = ["neutral", "success"];
+//if (commitSha == "" || commitSha === undefined) {
+//    // we're creating a warning for the property and advising to the default
+//    core.warning("no pull request detected, using head sha");
+//    commitSha = context.sha;
+//}
 
-const owner = process.env.GITHUB_REPOSITORY.split("/")[0];
-const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
+//// get the value for the neutral
+//let shouldFailForNeutral = core.getInput("fail-on-neutral");
+//// does a value exist
+//if (shouldFailForNeutral !== "") {
+//    // is it true
+//    if (shouldFailForNeutral === "true") {
+//        shouldFailForNeutral = true;
+//        // is it false
+//    } else if (shouldFailForNeutral === "false") {
+//        shouldFailForNeutral = false;
+//    } else {
+//        // raise warning if nothing set
+//        core.warning(
+//            "unknown value set for fail-on-neutral property, defaulting to false"
+//        );
+//        shouldFailForNeutral = false;
+//    }
+//} else {
+//    core.warning("nothing set for fail-on-neutral property, defaulting to false");
+//    shouldFailForNeutral = false;
+//}
 
-// When we use getInput, if there is no value, it comes back as an empty string. We must assume that empty strings are null and check/test appropriately
-const status = getInput("status");
-const title = getInput("title");
-const details = getInput("details");
-const summary = getInput("summary");
-const conclusion = getInput("conclusion");
-const existingCheckRunId = getInput("check-run-id");
-const images = getInput("images");
-const annotations = getInput("annotations");
-const token = getInput("github-token");
+//let shouldFailForNonSuccess = core.getInput("fail-on-error");
+//if (shouldFailForNonSuccess !== "") {
+//    if (shouldFailForNonSuccess === "true") {
+//        shouldFailForNonSuccess = true;
+//    } else if (shouldFailForNonSuccess === "false") {
+//        shouldFailForNonSuccess = false;
+//    } else {
+//        core.warning(
+//            "unknown value set for fail-on-error property, defaulting to false"
+//        );
+//        shouldFailForNonSuccess = false;
+//    }
+//} else {
+//    core.warning("nothing set for fail-on-error property, defaulting to false");
+//    shouldFailForNonSuccess = false;
+//}
 
-const octokit = getOctokit(token);
+//core.endGroup();
 
-// Create a custom Octokit constructor with the retry and throttling plugins installed
-//const OctokitWithPlugins = context.getOctokit(token)
+//// run async
+//async function run() {
+//    core.startGroup("validate failure options");
+//    if (conclusion !== "") {
+//        if (shouldFailForNonSuccess && !successStates.includes(conclusion)) {
+//            core.setFailed("check failed for non successive state");
+//        }
+//        if (shouldFailForNeutral && conclusion == "neutral") {
+//            core.setFailed("check failed for non successive state");
+//        }
+//    }
+//    core.endGroup();
 
-console.log("created kit");
+//    try {
+//        core.startGroup("construct payload");
 
-// initiate the client with the token and plugins
-//const octokit = new OctokitWithPlugins({
-//    auth: token,
-//    // Enable retries and customize strategy
-//    retry: {
-//        do: true, // enable retries
-//        retryAfter: 30, // time to wait between retries in seconds
-//        maxRetries: 5, // max number of retries
-//    },
-//    // Enable throttling/rate-limiting
-//    throttle: {
-//        onRateLimit: (retryAfter, options) => {
-//            octokit.log.warn(
-//                `Request quota exhausted for your request ${options.method} ${options.url}`
-//            );
-//            if (options.request.retryCount === 0) {
-//                // only retries once
-//                console.log(`Retrying after ${retryAfter} seconds!`);
-//                return true;
+//        let checkRunId = 0;
+
+//        let body = {
+//            owner,
+//            repo,
+//            name,
+//            head_sha: commitSha,
+//            status,
+//            output: {
+//                title,
+//                summary,
+//                text: details,
+//            },
+//        };
+
+//        if (conclusion !== "") {
+//            core.info("conclusion detected");
+//            core.debug(conclusion);
+//            body.conclusion = conclusion;
+//        }
+
+//        core.endGroup();
+
+//        core.startGroup("validate annotations and images");
+
+//        if (core.isDebug()) {
+//            core.debug(annotations);
+//        }
+
+//        if (annotations) {
+//            // Parse to JSON to handle safely
+//            const annotationsAsJson = JSON.parse(annotations);
+//            const annotationValidationErrors =
+//                validateAnnotationsArray(annotationsAsJson);
+
+//            if (annotationValidationErrors.length <= 0) {
+//                core.info("successfully validated annotations");
+//                body.output.annotations = annotationsAsJson;
+//            } else {
+//                core.error(annotationValidationErrors.join(" \n "));
+//                core.debug(annotationsAsJson);
+//                core.warning("Annotations parsing error, did not add");
 //            }
-//        },
-//        onSecondaryRateLimit: (retryAfter, options) => {
-//            octokit.log.warn(
-//                `Request quota exhausted for your secondary request ${options.method} ${options.url}`
-//            );
-//            if (options.request.retryCount === 0) {
-//                // only retries once
-//                console.log(`Secondary retrying after ${retryAfter} seconds!`);
-//                return true;
+//        }
+
+//        if (core.isDebug()) {
+//            core.debug(images);
+//        }
+
+//        if (images) {
+//            // Parse to JSON to handle safely
+//            const imageAsJson = JSON.parse(images);
+//            const imageValidationErrors = validateImagesArray(imageAsJson);
+
+//            if (imageValidationErrors.length <= 0) {
+//                core.info("successfully validated images");
+//                body.output.images = imageAsJson;
+//            } else {
+//                core.warning("Images parsing error, did not add");
 //            }
-//        },
-//        onAbuseLimit: (retryAfter, options) => {
-//            // does not retry, only logs a warning
-//            octokit.log.warn(
-//                `Abuse detected for your request ${options.method} ${options.url}`
-//            );
-//        },
-//    },
-//});
+//        }
 
-// Test inputs and if they fall back to defaults, inform the user that we've made an assumption here
-let name = getInput("name");
-if (name == "") {
-    // we're creating a warning for the property and advising to the default
-    warning("no name set, using repo name");
-    name = undefined.name;
-}
+//        core.endGroup();
 
-undefined.pull_request;
-let commitSha = "";
+//        core.startGroup("run command");
+//        if (existingCheckRunId === "") {
+//            core.info("creating a check run");
+//            // Create the check
+//            const createCheck = await octokit.rest.checks.create(body);
+//            checkRunId = createCheck.data.id;
+//            core.info(`created a check run with the id of ${checkRunId}`);
+//        } else {
+//            core.info("updating a check run");
+//            // add the existing check id
+//            body.check_run_id = existingCheckRunId;
 
-if (commitSha == "" || commitSha === undefined) {
-    // we're creating a warning for the property and advising to the default
-    warning("no pull request detected, using head sha");
-    commitSha = undefined;
-}
+//            // update the check
+//            const updateCheck = await octokit.rest.checks.update(body);
+//            checkRunId = updateCheck.data.id;
+//            core.info(`updated a check run with the id of ${checkRunId}`);
+//        }
+//        core.setOutput("check-run-id", checkRunId);
 
-// get the value for the neutral
-let shouldFailForNeutral = getInput("fail-on-neutral");
-// does a value exist
-if (shouldFailForNeutral !== "") {
-    // is it true
-    if (shouldFailForNeutral === "true") {
-        shouldFailForNeutral = true;
-        // is it false
-    } else if (shouldFailForNeutral === "false") {
-        shouldFailForNeutral = false;
-    } else {
-        // raise warning if nothing set
-        warning(
-            "unknown value set for fail-on-neutral property, defaulting to false"
-        );
-        shouldFailForNeutral = false;
-    }
-} else {
-    warning("nothing set for fail-on-neutral property, defaulting to false");
-    shouldFailForNeutral = false;
-}
+//        core.info("action was successful");
 
-let shouldFailForNonSuccess = getInput("fail-on-error");
-if (shouldFailForNonSuccess !== "") {
-    if (shouldFailForNonSuccess === "true") {
-        shouldFailForNonSuccess = true;
-    } else if (shouldFailForNonSuccess === "false") {
-        shouldFailForNonSuccess = false;
-    } else {
-        warning(
-            "unknown value set for fail-on-error property, defaulting to false"
-        );
-        shouldFailForNonSuccess = false;
-    }
-} else {
-    warning("nothing set for fail-on-error property, defaulting to false");
-    shouldFailForNonSuccess = false;
-}
+//        core.endGroup();
+//    } catch (error) {
+//        core.error(`Error ${error}, action did not succeed`);
+//        core.endGroup();
+//    }
+//}
 
-endGroup();
-
-// run async
-async function run() {
-    startGroup("validate failure options");
-    if (conclusion !== "") {
-        if (shouldFailForNonSuccess && !successStates.includes(conclusion)) {
-            setFailed("check failed for non successive state");
-        }
-        if (shouldFailForNeutral && conclusion == "neutral") {
-            setFailed("check failed for non successive state");
-        }
-    }
-    endGroup();
-
-    try {
-        startGroup("construct payload");
-
-        let checkRunId = 0;
-
-        let body = {
-            owner,
-            repo,
-            name,
-            head_sha: commitSha,
-            status,
-            output: {
-                title,
-                summary,
-                text: details,
-            },
-        };
-
-        if (conclusion !== "") {
-            info("conclusion detected");
-            debug(conclusion);
-            body.conclusion = conclusion;
-        }
-
-        endGroup();
-
-        startGroup("validate annotations and images");
-
-        if (isDebug()) {
-            debug(annotations);
-        }
-
-        if (annotations) {
-            // Parse to JSON to handle safely
-            const annotationsAsJson = JSON.parse(annotations);
-            const annotationValidationErrors =
-                validateAnnotationsArray$1(annotationsAsJson);
-
-            if (annotationValidationErrors.length <= 0) {
-                info("successfully validated annotations");
-                body.output.annotations = annotationsAsJson;
-            } else {
-                error(annotationValidationErrors.join(" \n "));
-                debug(annotationsAsJson);
-                warning("Annotations parsing error, did not add");
-            }
-        }
-
-        if (isDebug()) {
-            debug(images);
-        }
-
-        if (images) {
-            // Parse to JSON to handle safely
-            const imageAsJson = JSON.parse(images);
-            const imageValidationErrors = validateImagesArray$1(imageAsJson);
-
-            if (imageValidationErrors.length <= 0) {
-                info("successfully validated images");
-                body.output.images = imageAsJson;
-            } else {
-                warning("Images parsing error, did not add");
-            }
-        }
-
-        endGroup();
-
-        startGroup("run command");
-        if (existingCheckRunId === "") {
-            info("creating a check run");
-            // Create the check
-            const createCheck = await octokit.rest.checks.create(body);
-            checkRunId = createCheck.data.id;
-            info(`created a check run with the id of ${checkRunId}`);
-        } else {
-            info("updating a check run");
-            // add the existing check id
-            body.check_run_id = existingCheckRunId;
-
-            // update the check
-            const updateCheck = await octokit.rest.checks.update(body);
-            checkRunId = updateCheck.data.id;
-            info(`updated a check run with the id of ${checkRunId}`);
-        }
-        setOutput("check-run-id", checkRunId);
-
-        info("action was successful");
-
-        endGroup();
-    } catch (error$1) {
-        error(`Error ${error$1}, action did not succeed`);
-        endGroup();
-    }
-}
-
-run();
-//# sourceMappingURL=index.mjs.map
+//run();
+//# sourceMappingURL=index.js.map

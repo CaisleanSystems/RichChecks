@@ -1,18 +1,33 @@
-import { nodeResolve } from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
+//import { nodeResolve } from "@rollup/plugin-node-resolve";
+//import commonjs from "@rollup/plugin-commonjs";
 
-export default {
+//export default {
+//    input: "index.js",
+//    output: {
+//        esModule: true,
+//        file: "dist/index.mjs",
+//        format: "es",
+//        sourcemap: true
+//    },
+//    plugins: [
+//        nodeResolve({
+//            preferBuiltins: true
+//        }),
+//        commonjs({include: /node_modules/})
+//    ]
+//};
+import commonjs from "@rollup/plugin-commonjs";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+
+const config = {
     input: "index.js",
     output: {
         esModule: true,
-        file: "dist/index.mjs",
+        file: "dist/index.js",
         format: "es",
-        sourcemap: true
+        sourcemap: true,
     },
-    plugins: [
-        nodeResolve({
-            preferBuiltins: true
-        }),
-        commonjs({include: /node_modules/})
-    ]
+    plugins: [commonjs(), nodeResolve({ preferBuiltins: true })],
 };
+
+export default config;

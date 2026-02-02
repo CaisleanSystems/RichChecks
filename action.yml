@@ -49,8 +49,8 @@
 #   main: 'dist/index.mjs'
 
 
-name: Hello World
-description: Greet someone and record the time
+name: 'Update/Create a Rich Check by Caislean Systems'
+description: "Rich checks from GitHub Mastery Book"
 
 inputs:
   who-to-greet: # id of input

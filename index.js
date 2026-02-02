@@ -10,8 +10,10 @@ import * as validateImagesArray from "./validateImagesArray";
 core.startGroup("setup variables and client");
 const successStates = ["neutral", "success"];
 
-const owner = process.env.GITHUB_REPOSITORY.split("/")[0];
-const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
+// defensive parse of GITHUB_REPOSITORY to avoid runtime crash when not set
+const repoEnv = process.env.GITHUB_REPOSITORY || "";
+const owner = repoEnv.includes("/") ? repoEnv.split("/")[0] : "";
+const repo = repoEnv.includes("/") ? repoEnv.split("/")[1] : "";
 
 // When we use getInput, if there is no value, it comes back as an empty string. We must assume that empty strings are null and check/test appropriately
 const status = core.getInput("status");
@@ -41,7 +43,6 @@ const octokit = new OctokitWithPlugins({
     // Enable throttling/rate-limiting
     throttle: {
         onRateLimit: (retryAfter, options, octokitInstance, retryCount) => {
-            // octokitInstance is available here from the plugin
             octokitInstance.log.warn(
                 `Request quota exhausted for your request ${options.method} ${options.url}`
             );
@@ -72,10 +73,11 @@ let name = core.getInput("name");
 if (name == "") {
     // we're creating a warning for the property and advising to the default
     core.warning("no name set, using repo name");
-    name = github.repo.name;
+    // use github.context.repo.name (not github.repo)
+    name = github.context.repo ? github.context.repo.repo : "";
 }
 
-const pull_request = github.payload.pull_request;
+const pull_request = github.context && github.context.payload ? github.context.payload.pull_request : undefined;
 let commitSha = "";
 if (pull_request !== undefined) {
     commitSha = pull_request.head.sha;
@@ -84,7 +86,8 @@ if (pull_request !== undefined) {
 if (commitSha == "" || commitSha === undefined) {
     // we're creating a warning for the property and advising to the default
     core.warning("no pull request detected, using head sha");
-    commitSha = github.sha;
+    // use github.context.sha (not github.sha)
+    commitSha = github.context ? github.context.sha : "";
 }
 
 // get the value for the neutral

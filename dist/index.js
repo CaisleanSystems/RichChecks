@@ -32750,7 +32750,7 @@ const defaults = {
 };
 Octokit$1.plugin(restEndpointMethods, paginateRest).defaults(defaults);
 
-new Context();
+const context = new Context();
 
 const VERSION$3 = "6.0.0";
 
@@ -34735,8 +34735,10 @@ var validateImagesArray$1 = /*#__PURE__*/Object.freeze({
 startGroup("setup variables and client");
 const successStates = ["neutral", "success"];
 
-const owner = process.env.GITHUB_REPOSITORY.split("/")[0];
-const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
+// defensive parse of GITHUB_REPOSITORY to avoid runtime crash when not set
+const repoEnv = process.env.GITHUB_REPOSITORY || "";
+const owner = repoEnv.includes("/") ? repoEnv.split("/")[0] : "";
+const repo = repoEnv.includes("/") ? repoEnv.split("/")[1] : "";
 
 // When we use getInput, if there is no value, it comes back as an empty string. We must assume that empty strings are null and check/test appropriately
 const status = getInput("status");
@@ -34766,7 +34768,6 @@ const octokit = new OctokitWithPlugins({
     // Enable throttling/rate-limiting
     throttle: {
         onRateLimit: (retryAfter, options, octokitInstance, retryCount) => {
-            // octokitInstance is available here from the plugin
             octokitInstance.log.warn(
                 `Request quota exhausted for your request ${options.method} ${options.url}`
             );
@@ -34797,16 +34798,21 @@ let name = getInput("name");
 if (name == "") {
     // we're creating a warning for the property and advising to the default
     warning("no name set, using repo name");
-    name = undefined.name;
+    // use github.context.repo.name (not github.repo)
+    name = context.repo ? context.repo.repo : "";
 }
 
-undefined.pull_request;
+const pull_request = context && context.payload ? context.payload.pull_request : undefined;
 let commitSha = "";
+if (pull_request !== undefined) {
+    commitSha = pull_request.head.sha;
+}
 
 if (commitSha == "" || commitSha === undefined) {
     // we're creating a warning for the property and advising to the default
     warning("no pull request detected, using head sha");
-    commitSha = undefined;
+    // use github.context.sha (not github.sha)
+    commitSha = context ? context.sha : "";
 }
 
 // get the value for the neutral
